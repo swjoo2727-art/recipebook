@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Our Recipe Book 🍳</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #faf7f2;
+    --warm-white: #fff9f0;
+    --brown: #3d2b1f;
+    --rust: #c4623a;
+    --sage: #7a9e7e;
+    --gold: #d4a853;
+    --light-sage: #eef4ef;
+    --light-rust: #fdf0ea;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--brown);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--brown);
+    padding: 48px 24px 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 30% 50%, rgba(196,98,58,0.25) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 50%, rgba(122,158,126,0.2) 0%, transparent 60%);
+  }
+
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.2rem, 6vw, 3.8rem);
+    color: var(--cream);
+    position: relative;
+    letter-spacing: -0.5px;
+  }
+
+  header p {
+    font-size: 0.95rem;
+    color: rgba(250,247,242,0.6);
+    margin-top: 8px;
+    font-weight: 300;
+    letter-spacing: 0.5px;
+    position: relative;
+  }
+
+  .heart {
+    color: var(--rust);
+    font-size: 1.1em;
+  }
+
+  /* NAV / FILTER */
+  .filter-bar {
+    display: flex;
+    gap: 10px;
+    padding: 24px 24px 0;
+    flex-wrap: wrap;
+    max-width: 1100px;
+    margin: 0 auto;
+    align-items: center;
+  }
+
+  .filter-label {
+    font-size: 0.78rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--brown);
+    opacity: 0.5;
+    margin-right: 4px;
+  }
+
+  .filter-btn {
+    padding: 7px 18px;
+    border-radius: 100px;
+    border: 1.5px solid var(--brown);
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--brown);
+    cursor: pointer;
+    transition: all 0.2s;
+    opacity: 0.5;
+  }
+
+  .filter-btn:hover { opacity: 1; }
+
+  .filter-btn.active {
+    background: var(--brown);
+    color: var(--cream);
+    opacity: 1;
+  }
+
+  /* SEARCH */
+  .search-wrap {
+    max-width: 1100px;
+    margin: 16px auto 0;
+    padding: 0 24px;
+  }
+
+  .search-wrap input {
+    width: 100%;
+    max-width: 360px;
+    padding: 10px 18px;
+    border-radius: 100px;
+    border: 1.5px solid rgba(61,43,31,0.2);
+    background: white;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    color: var(--brown);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .search-wrap input:focus {
+    border-color: var(--rust);
+  }
+
+  .search-wrap input::placeholder { color: rgba(61,43,31,0.35); }
+
+  /* GRID */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+    max-width: 1100px;
+    margin: 28px auto 60px;
+    padding: 0 24px;
+  }
+
+  /* CARD */
+  .card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.25s, box-shadow 0.25s;
+    box-shadow: 0 2px 12px rgba(61,43,31,0.07);
+    border: 1px solid rgba(61,43,31,0.06);
+  }
+
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(61,43,31,0.13);
+  }
+
+  .card-color {
+    height: 8px;
+  }
+
+  .card-body {
+    padding: 22px 24px 20px;
+  }
+
+  .card-tag {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 3px 10px;
+    border-radius: 100px;
+    margin-bottom: 10px;
+  }
+
+  .tag-korean { background: var(--light-rust); color: var(--rust); }
+  .tag-western { background: var(--light-sage); color: #4a7a4e; }
+  .tag-baking { background: #fef8ec; color: #a07a20; }
+
+  .bar-korean { background: var(--rust); }
+  .bar-western { background: var(--sage); }
+  .bar-baking { background: var(--gold); }
+
+  .card h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    line-height: 1.3;
+  }
+
+  .card p.desc {
+    font-size: 0.85rem;
+    color: rgba(61,43,31,0.55);
+    line-height: 1.5;
+    margin-bottom: 14px;
+  }
+
+  .card-meta {
+    display: flex;
+    gap: 14px;
+    font-size: 0.78rem;
+    color: rgba(61,43,31,0.45);
+  }
+
+  .card-meta span { display: flex; align-items: center; gap: 4px; }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(30,18,10,0.55);
+    backdrop-filter: blur(4px);
+    z-index: 100;
+    padding: 20px;
+    overflow-y: auto;
+    align-items: flex-start;
+    justify-content: center;
+  }
+
+  .modal-overlay.open {
+    display: flex;
+  }
+
+  .modal {
+    background: var(--warm-white);
+    border-radius: 24px;
+    max-width: 640px;
+    width: 100%;
+    margin: auto;
+    overflow: hidden;
+    box-shadow: 0 32px 80px rgba(30,18,10,0.25);
+    animation: slideUp 0.3s ease;
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  .modal-header {
+    padding: 32px 36px 24px;
+    border-bottom: 1px solid rgba(61,43,31,0.08);
+    position: relative;
+  }
+
+  .modal-header .tag { margin-bottom: 10px; }
+
+  .modal-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.9rem;
+    line-height: 1.25;
+  }
+
+  .modal-header .korean-name {
+    font-size: 0.9rem;
+    color: rgba(61,43,31,0.45);
+    margin-top: 4px;
+    font-style: italic;
+  }
+
+  .close-btn {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(61,43,31,0.08);
+    color: var(--brown);
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+  }
+
+  .close-btn:hover { background: rgba(61,43,31,0.15); }
+
+  .modal-body {
+    padding: 28px 36px 36px;
+  }
+
+  .modal-tip {
+    background: var(--light-rust);
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 0.83rem;
+    color: var(--rust);
+    margin-bottom: 24px;
+    line-height: 1.5;
+  }
+
+  .modal-tip strong { font-weight: 600; }
+
+  .section-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: rgba(61,43,31,0.4);
+    margin-bottom: 12px;
+  }
+
+  /* INGREDIENTS */
+  .ingredients {
+    background: white;
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin-bottom: 24px;
+  }
+
+  .ing-group { margin-bottom: 14px; }
+  .ing-group:last-child { margin-bottom: 0; }
+
+  .ing-group-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--rust);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 8px;
+  }
+
+  .ing-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 5px 0;
+    border-bottom: 1px dashed rgba(61,43,31,0.08);
+    font-size: 0.88rem;
+  }
+
+  .ing-row:last-child { border-bottom: none; }
+
+  .ing-name { color: var(--brown); }
+
+  .ing-amount {
+    font-weight: 500;
+    color: var(--rust);
+    font-size: 0.82rem;
+    text-align: right;
+    min-width: 90px;
+  }
+
+  /* STEPS */
+  .steps { list-style: none; }
+
+  .step {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+    align-items: flex-start;
+  }
+
+  .step-num {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--brown);
+    color: var(--cream);
+    font-size: 0.8rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1px;
+  }
+
+  .step-text {
+    font-size: 0.9rem;
+    line-height: 1.65;
+    color: rgba(61,43,31,0.85);
+  }
+
+  .step-note {
+    display: inline-block;
+    background: #fef8ec;
+    color: #a07a20;
+    font-size: 0.78rem;
+    padding: 2px 8px;
+    border-radius: 6px;
+    margin-top: 4px;
+    font-style: italic;
+  }
+
+  /* ALT OPTION */
+  .alt-option {
+    background: var(--light-sage);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 0.83rem;
+    color: #4a7a4e;
+    margin-top: 14px;
+  }
+
+  .alt-option strong { font-weight: 600; }
+
+  /* NO RESULTS */
+  .no-results {
+    grid-column: 1/-1;
+    text-align: center;
+    padding: 60px 20px;
+    color: rgba(61,43,31,0.35);
+    font-size: 1rem;
+  }
+
+  .no-results span { font-size: 2rem; display: block; margin-bottom: 12px; }
+
+  @media (max-width: 500px) {
+    .modal-header, .modal-body { padding-left: 22px; padding-right: 22px; }
+    .modal-header h2 { font-size: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Our Recipe Book <span class="heart">♥</span></h1>
+  <p>Korean & Western recipes, made together</p>
+</header>
+
+<div class="filter-bar">
+  <span class="filter-label">Filter:</span>
+  <button class="filter-btn active" onclick="filterRecipes('all', this)">All</button>
+  <button class="filter-btn" onclick="filterRecipes('korean', this)">🇰🇷 Korean</button>
+  <button class="filter-btn" onclick="filterRecipes('western', this)">🥖 Western</button>
+  <button class="filter-btn" onclick="filterRecipes('baking', this)">🧁 Baking</button>
+</div>
+
+<div class="search-wrap">
+  <input type="text" placeholder="🔍  Search recipes..." oninput="searchRecipes(this.value)" />
+</div>
+
+<div class="grid" id="grid"></div>
+
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal" id="modal"></div>
+</div>
+
+<script>
+const recipes = [
+  {
+    id: 1,
+    name: "Spicy Squid Stir-Fry",
+    korean: "오징어볶음",
+    category: "korean",
+    desc: "A classic Korean stir-fry with a bold, spicy-savory sauce. Great over rice.",
+    time: "20 min",
+    difficulty: "Easy",
+    tip: "This recipe is just the sauce — pair it with 1 lb (450g) of cleaned squid, sliced into rings, and stir-fry with onion and green onion.",
+    ingredients: [
+      { group: "Sauce", items: [
+        { name: "Gochujang (Korean chili paste)", amount: "1 tbsp" },
+        { name: "Gochugaru (Korean chili flakes)", amount: "1½ tbsp" },
+        { name: "Soy sauce (regular)", amount: "2 tbsp" },
+        { name: "Minced garlic", amount: "1 tbsp" },
+        { name: "Allulose (or sugar)", amount: "1 tbsp" },
+      ]}
+    ],
+    steps: [
+      "Mix all sauce ingredients together in a small bowl until well combined. Set aside.",
+      "Clean squid and cut the body into rings; leave tentacles whole. Pat dry with a paper towel — this helps it sear instead of steam.",
+      "Heat a large pan or wok over high heat. Add a splash of oil. When it's shimmering hot, add the squid.",
+      "Stir-fry for 1–2 minutes until the squid turns opaque. Don't overcook — it gets rubbery fast.",
+      "Add sliced onion and green onion, then pour in the sauce. Toss everything together for another 1–2 minutes.",
+      "Serve hot over white rice."
+    ],
+    alt: null
+  },
+  {
+    id: 2,
+    name: "Perilla Pasta",
+    korean: "들깨파스타",
+    category: "korean",
+    desc: "A nutty, earthy Korean-style pasta with perilla oil and umami-rich tsuyu broth.",
+    time: "20 min",
+    difficulty: "Easy",
+    tip: "Allulose is a low-calorie sweetener — you can swap it with the same amount of sugar or honey.",
+    ingredients: [
+      { group: "Sauce (per serving)", items: [
+        { name: "Minced garlic", amount: "½ tsp (0.3 tbsp)" },
+        { name: "Tsuyu (Japanese dashi soy)", amount: "½ tbsp" },
+        { name: "Allulose (or sugar)", amount: "½ tbsp" },
+        { name: "Perilla oil (들기름)", amount: "½ tbsp" },
+      ]},
+      { group: "Also needed", items: [
+        { name: "Pasta (spaghetti or linguine)", amount: "80g per person" },
+        { name: "Perilla leaves (깻잎), chiffonade", amount: "a handful" },
+        { name: "Parmesan or nori, to top", amount: "optional" },
+      ]}
+    ],
+    steps: [
+      "Boil pasta in well-salted water according to package directions. Before draining, save ¼ cup of pasta water.",
+      "While pasta cooks, mix all sauce ingredients together in your serving bowl.",
+      "Drain pasta and add it directly to the bowl with the sauce. Toss well, adding a splash of pasta water if it looks dry.",
+      "Top with fresh perilla leaves cut into thin strips. Add parmesan or crumbled nori if you like.",
+      "Eat right away — the garlic perfume fades fast!"
+    ],
+    alt: null
+  },
+  {
+    id: 3,
+    name: "Chocolate Sweet Potato Madeleines",
+    korean: "초코마들렌",
+    category: "baking",
+    desc: "Moist, fudgy mini cakes made with sweet potato and cocoa. Naturally lower sugar.",
+    time: "25 min",
+    difficulty: "Easy",
+    tip: "These are naturally gluten-free! Make sure to grease your madeleine pan well, or use a silicone mold.",
+    ingredients: [
+      { group: "Batter", items: [
+        { name: "Allulose (or sugar)", amount: "21g" },
+        { name: "Cooked sweet potato, mashed", amount: "40g" },
+        { name: "Egg", amount: "1 large" },
+        { name: "Cocoa powder (unsweetened)", amount: "10g" },
+        { name: "Baking powder", amount: "a pinch" },
+      ]}
+    ],
+    steps: [
+      "Preheat oven to 375°F (190°C). Lightly grease a madeleine pan with butter or cooking spray.",
+      "In a bowl, combine the mashed sweet potato, egg, and allulose. Mix until smooth.",
+      "Sift in the cocoa powder and baking powder. Stir until just combined — don't overmix.",
+      "Spoon the batter into the madeleine molds, filling each about ¾ full.",
+      "Bake for 10–12 minutes, until a toothpick inserted in the center comes out clean.",
+      "Let cool for 5 minutes in the pan before turning out."
+    ],
+    alt: "No madeleine pan? Pour into a greased muffin tin and bake the same way — they'll taste identical, just rounder.",
+    stepNote: { 0: "Tip: You can substitute the baking powder with 1 tbsp of Danshe (단쉐) if you have it." }
+  },
+  {
+    id: 4,
+    name: "Cabbage Tuna Rice Bowl",
+    korean: "양배추참치덮밥",
+    category: "korean",
+    desc: "A quick and filling rice bowl with spicy-tangy tuna and crunchy cabbage.",
+    time: "15 min",
+    difficulty: "Easy",
+    tip: "You've got two sauce options — both are delicious. The gochugaru version is spicier; the oyster sauce version is milder and savory.",
+    ingredients: [
+      { group: "Option A – Spicy Sauce", items: [
+        { name: "Gochugaru (chili flakes)", amount: "2 tbsp" },
+        { name: "Rice vinegar", amount: "2 tbsp" },
+        { name: "Minced garlic", amount: "½ tbsp" },
+        { name: "Allulose (or sugar)", amount: "1 tbsp" },
+        { name: "Soy sauce", amount: "1 tbsp" },
+      ]},
+      { group: "Option B – Savory Sauce", items: [
+        { name: "Oyster sauce", amount: "1 tbsp" },
+        { name: "Tuna fish sauce (참치액)", amount: "1 tbsp" },
+      ]},
+      { group: "Base", items: [
+        { name: "Canned tuna, drained", amount: "1 can (165g)" },
+        { name: "Shredded cabbage", amount: "2 big handfuls" },
+        { name: "Steamed white rice", amount: "1 bowl" },
+        { name: "Sesame oil (for the rice)", amount: "1 tbsp" },
+      ]}
+    ],
+    steps: [
+      "Cook or reheat your rice. Drizzle 1 tbsp sesame oil over it and stir to coat — this makes it glossy and fragrant.",
+      "Drain the canned tuna well. Mix it with your chosen sauce.",
+      "Pile shredded cabbage over the rice, then spoon the sauced tuna on top.",
+      "Add a drizzle of sesame oil or a sprinkle of sesame seeds if you have them.",
+      "Mix everything together before eating!"
+    ],
+    alt: null
+  },
+  {
+    id: 5,
+    name: "Dak Galbi Marinade",
+    korean: "닭갈비 양념",
+    category: "korean",
+    desc: "The famous Chuncheon-style spicy stir-fried chicken marinade. Just marinate and cook.",
+    time: "30 min + marinating",
+    difficulty: "Easy",
+    tip: "This is the marinade for about 600g–800g of chicken thighs (boneless, skinless). Let it marinate at least 30 min, overnight is even better.",
+    ingredients: [
+      { group: "Marinade", items: [
+        { name: "Gochujang (chili paste)", amount: "3 tbsp" },
+        { name: "Gochugaru (chili flakes)", amount: "3 tbsp" },
+        { name: "Minced garlic", amount: "3 tbsp" },
+        { name: "Soy sauce", amount: "3 tbsp" },
+        { name: "Mirin (미림/맛술)", amount: "3 tbsp" },
+        { name: "Allulose (or sugar)", amount: "3 tbsp" },
+      ]},
+      { group: "Also good to add", items: [
+        { name: "Sliced cabbage, sweet potato, and green onion", amount: "to cook alongside" },
+      ]}
+    ],
+    steps: [
+      "Cut chicken thighs into bite-sized chunks (about 3–4cm pieces).",
+      "Mix all marinade ingredients in a bowl. Add chicken and toss until every piece is coated.",
+      "Cover and refrigerate for at least 30 minutes. Overnight = more flavor.",
+      "When ready to cook, heat a large pan over medium-high heat with a little oil.",
+      "Add marinated chicken and cook, stirring occasionally, for 8–10 minutes until cooked through and slightly caramelized.",
+      "Add cabbage, sweet potato slices, and green onion in the last few minutes. Cook until soft.",
+      "Serve with rice and wrap in perilla leaves if you have them!"
+    ],
+    alt: null
+  },
+  {
+    id: 6,
+    name: "Tangy Garlic Chive Salad",
+    korean: "새콤한 부추무침",
+    category: "korean",
+    desc: "A bright, garlicky chive side dish that balances any heavy main course.",
+    time: "10 min",
+    difficulty: "Easy",
+    tip: "Korean chives (부추) look like thin flat grass. If you can't find them, green onion tops work in a pinch. Maesil (매실액) is plum extract — you can sub with extra rice vinegar + a little sugar.",
+    ingredients: [
+      { group: "Dressing", items: [
+        { name: "Minced garlic", amount: "½ tbsp" },
+        { name: "Gochugaru (chili flakes)", amount: "3 tbsp" },
+        { name: "Maesil (plum extract)", amount: "2 tbsp" },
+        { name: "Fish sauce (까나리액젓)", amount: "2 tbsp" },
+        { name: "Rice vinegar", amount: "1 tbsp" },
+        { name: "Sesame oil", amount: "1 tbsp" },
+        { name: "Sesame seeds", amount: "a sprinkle" },
+      ]},
+      { group: "Produce", items: [
+        { name: "Korean chives (부추), cut into 3-inch lengths", amount: "1 big bunch" },
+      ]}
+    ],
+    steps: [
+      "Rinse the chives well and cut them into 3-inch (8cm) segments.",
+      "Combine all dressing ingredients in a mixing bowl and stir.",
+      "Add the chives and toss gently with your hands or tongs until evenly coated.",
+      "Taste and adjust — add more vinegar if you want it tangier, more maesil if you want it sweeter.",
+      "Serve immediately as a side dish (banchan) with rice."
+    ],
+    alt: null
+  },
+  {
+    id: 7,
+    name: "Low-Cal Spicy Rice Cakes",
+    korean: "유지만 엽떡",
+    category: "korean",
+    desc: "A guilt-free version of Yeopgi Tteokbokki — wrapped in rice paper instead of rice cakes.",
+    time: "25 min",
+    difficulty: "Medium",
+    tip: "Allulose keeps this low-calorie. The sauce is inspired by Yeopgi's famous tteokbokki flavor — sweet, spicy, and savory all at once.",
+    ingredients: [
+      { group: "Sauce", items: [
+        { name: "Gochugaru (chili flakes)", amount: "2 tbsp" },
+        { name: "Olive oil", amount: "1 tbsp" },
+        { name: "Allulose (or sugar)", amount: "1 tbsp" },
+        { name: "Minced garlic", amount: "½ tbsp" },
+        { name: "Gochujang (chili paste)", amount: "½ tbsp" },
+        { name: "Oyster sauce", amount: "½ tbsp" },
+        { name: "Soy sauce", amount: "½ tbsp" },
+        { name: "Black pepper", amount: "½ tsp" },
+        { name: "Tuna fish sauce (참치액)", amount: "1 tbsp" },
+      ]},
+      { group: "Filling & Wrapping", items: [
+        { name: "Shredded cabbage", amount: "2 big handfuls" },
+        { name: "Chicken breast, cooked and sliced", amount: "1 piece" },
+        { name: "Water", amount: "2 cups" },
+        { name: "Round rice paper (bánh tráng)", amount: "as needed" },
+        { name: "String cheese sticks", amount: "as needed" },
+      ]}
+    ],
+    steps: [
+      "Mix all sauce ingredients together in a small bowl. Set aside.",
+      "Add cabbage and chicken breast with 2 cups of water to a pan. Bring to a boil over medium-high heat.",
+      "Once boiling, pour in the sauce. Stir and simmer for 5–7 minutes until the liquid reduces slightly and the chicken is cooked through.",
+      "While the filling cooks, dip a rice paper sheet in warm water for 5–10 seconds until just pliable. Lay it flat on a damp cutting board.",
+      "Place a strip of string cheese in the center of the rice paper. Spoon some of the saucy cabbage-chicken mix on top.",
+      "Fold in the sides, then roll up tightly like a burrito. Repeat with remaining rice papers.",
+      "Eat immediately — rice paper gets sticky fast!"
+    ],
+    alt: null
+  },
+  {
+    id: 8,
+    name: "Braised Spicy Tofu",
+    korean: "두부조림",
+    category: "korean",
+    desc: "Silky tofu simmered in a savory, lightly spicy soy broth. A weeknight staple.",
+    time: "20 min",
+    difficulty: "Easy",
+    tip: "Use firm tofu so it holds its shape. Pat it very dry before pan-frying — you want a golden crust, not steamed tofu.",
+    ingredients: [
+      { group: "Sauce", items: [
+        { name: "Soy sauce (진간장)", amount: "3 tbsp" },
+        { name: "Mirin (미림)", amount: "2 tbsp" },
+        { name: "Tuna fish sauce (참치액)", amount: "1 tbsp" },
+        { name: "Minced garlic", amount: "1 tbsp" },
+        { name: "Allulose (or sugar)", amount: "2 tbsp" },
+        { name: "Gochugaru (chili flakes)", amount: "2 tbsp" },
+        { name: "Black pepper", amount: "a pinch" },
+        { name: "Water", amount: "¾ cup (200ml)" },
+      ]},
+      { group: "Produce & Protein", items: [
+        { name: "Firm tofu", amount: "1 block (300g)" },
+        { name: "Cheongyang chili pepper, sliced", amount: "1 (optional, for heat)" },
+        { name: "Green onion, chopped", amount: "1 stalk" },
+      ]}
+    ],
+    steps: [
+      "Drain the tofu and press it dry with paper towels. Slice into ½-inch thick rectangles.",
+      "Heat a nonstick pan with a little oil over medium-high heat. Pan-fry tofu slices for 2–3 minutes per side until golden. Remove and set aside.",
+      "In the same pan, mix together all sauce ingredients and bring to a boil.",
+      "Add the pan-fried tofu back in. Spoon sauce over each piece.",
+      "Add sliced chili and green onion. Simmer on medium-low for 5–7 minutes, spooning sauce over the tofu occasionally, until the sauce thickens slightly.",
+      "Serve over rice with the sauce drizzled on top."
+    ],
+    alt: null
+  },
+  {
+    id: 9,
+    name: "Pretty Toast",
+    korean: null,
+    category: "western",
+    desc: "An aesthetic, café-style toast with whipped ricotta, cherry jam, and honey. Instagram-worthy in 5 minutes.",
+    time: "5 min",
+    difficulty: "Easy",
+    tip: "Key to the 'pretty' factor: layer generously and finish with lime zest — that bright green pop makes everything look fancy.",
+    ingredients: [
+      { group: "Ingredients", items: [
+        { name: "Sourdough bread, thick-sliced", amount: "1–2 slices" },
+        { name: "Ricotta cheese", amount: "3–4 tbsp" },
+        { name: "Lime zest (from ½ lime)", amount: "½ tsp" },
+        { name: "Cherry jam", amount: "1–2 tbsp" },
+        { name: "Good honey (like Beehill)", amount: "1 tbsp" },
+        { name: "Lime, extra for zest", amount: "½" },
+      ]}
+    ],
+    steps: [
+      "Toast the sourdough to your liking — golden and crispy is best.",
+      "While it toasts, mix ricotta with the lime zest in a small bowl. Stir until fluffy and combined. (This is your 'lime whip'.)",
+      "Spread the lime ricotta generously over the warm toast.",
+      "Spoon cherry jam over the ricotta.",
+      "Drizzle honey on top.",
+      "Zest a bit more lime directly over the top for color and aroma. Serve immediately."
+    ],
+    alt: null
+  },
+  {
+    id: 10,
+    name: "Basque Cheesecake",
+    korean: "치즈케이크",
+    category: "baking",
+    desc: "A burnished, creamy Basque-style cheesecake. No crust, no water bath, no fuss.",
+    time: "45 min + 12hr chilling",
+    difficulty: "Medium",
+    tip: "All dairy ingredients must be at room temperature — cold cream cheese will create lumps that don't bake out. Take everything out of the fridge 1–2 hours before you start.",
+    ingredients: [
+      { group: "Batter", items: [
+        { name: "Cream cheese, room temp", amount: "400g" },
+        { name: "Sugar", amount: "90g" },
+        { name: "Eggs, room temp, beaten", amount: "120g (~2 large)" },
+        { name: "Heavy cream, room temp", amount: "200g" },
+        { name: "Vanilla extract", amount: "2g (about ½ tsp)" },
+      ]}
+    ],
+    steps: [
+      "Preheat oven to 390°F (200°C). Line a 7-inch round pan with parchment paper — let the paper come up over the sides. Wrinkles are fine.",
+      "In a large bowl, beat the cream cheese with a spatula or hand mixer until completely smooth and lump-free.",
+      "Add sugar and mix until dissolved, about 2 minutes.",
+      "Add the beaten eggs in two batches, mixing gently between each addition.",
+      "Pour in the heavy cream and vanilla extract. Mix with your spatula kept in contact with the bottom of the bowl — don't whisk air in.",
+      "Pour batter into the lined pan. Bake at 390°F (200°C) for 30 minutes. The top should be deeply golden-brown and the center should jiggle like jello when you shake the pan.",
+      "Let cool completely at room temperature, then refrigerate for at least 12 hours before slicing. It firms up and the flavor deepens overnight."
+    ],
+    alt: null
+  },
+  {
+    id: 11,
+    name: "Biscoff S'mores Cookies",
+    korean: "비스코프 스모어 쿠키",
+    category: "baking",
+    desc: "Chewy brown butter-style cookies with crushed Biscoff and a gooey frozen marshmallow center.",
+    time: "30 min + 1hr chill",
+    difficulty: "Medium",
+    tip: "Freeze your marshmallows for at least 1 hour before baking — this slows their melt so they stay gooey inside instead of dissolving. Also: slightly underbaked is better for this cookie.",
+    ingredients: [
+      { group: "Cookie Dough (makes ~10)", items: [
+        { name: "Unsalted butter, room temp", amount: "120g" },
+        { name: "White sugar", amount: "60g" },
+        { name: "Brown sugar (packed)", amount: "60g" },
+        { name: "Salt", amount: "2g" },
+        { name: "Egg, room temp", amount: "1 large" },
+        { name: "Vanilla extract", amount: "1 tsp" },
+        { name: "All-purpose flour", amount: "190g" },
+        { name: "Baking soda", amount: "2g" },
+        { name: "Cinnamon powder", amount: "2g" },
+        { name: "Lotus Biscoff cookies", amount: "22 cookies total" },
+        { name: "Marshmallows, frozen", amount: "10 large" },
+      ]}
+    ],
+    steps: [
+      "Put 10 marshmallows in the freezer at least 1 hour before baking (the night before is great).",
+      "Beat room-temperature butter in a bowl until creamy. Add white sugar and brown sugar, beat until light and fluffy — about 2 minutes.",
+      "Add the egg, salt, and vanilla extract. Mix until combined.",
+      "In a separate bowl, whisk together flour, cinnamon, and baking soda. Sift this into the butter mixture.",
+      "Crush 12 Biscoff cookies into coarse crumbs (use a bag + rolling pin, or a food processor). Fold the crumbs into the dough. Mix until just combined — a few flour streaks are fine.",
+      "Wrap dough in plastic wrap and refrigerate for 1 hour.",
+      "Preheat oven to 340°F (170°C). Line a baking sheet with parchment.",
+      "Scoop dough into 10 balls. Flatten each, press a frozen marshmallow into the center, and fold dough around it, sealing completely.",
+      "Place on baking sheet 2 inches apart. Press 1 whole Biscoff cookie on top of each ball.",
+      "Bake 12 minutes. Cookies will look underdone — that's right. They firm up as they cool. Let them rest on the pan for 10 minutes before moving."
+    ],
+    alt: null
+  },
+  {
+    id: 12,
+    name: "Peanut Butter Banana Muffins",
+    korean: "땅콩버터머핀",
+    category: "baking",
+    desc: "3-ingredient banana muffins loaded with peanut butter and blueberries. No flour, no fuss.",
+    time: "25 min",
+    difficulty: "Easy",
+    tip: "The riper the bananas, the sweeter and more flavorful. Black-spotted bananas = perfect for this. Frozen blueberries work just as well as fresh.",
+    ingredients: [
+      { group: "Batter", items: [
+        { name: "Ripe bananas", amount: "2 large" },
+        { name: "Natural peanut butter", amount: "150g" },
+        { name: "Fresh or frozen blueberries", amount: "150g" },
+        { name: "Eggs", amount: "2 large" },
+        { name: "Baking powder", amount: "1 tsp" },
+      ]}
+    ],
+    steps: [
+      "Preheat oven to 355°F (180°C). Line a muffin tin with paper liners or grease well.",
+      "Peel and mash the bananas in a large bowl with a fork until mostly smooth.",
+      "Add peanut butter and eggs. Mix until combined — the batter will be thick.",
+      "Add baking powder and stir in.",
+      "Gently fold in blueberries. Don't overmix or they'll bleed color throughout.",
+      "Spoon into muffin cups, filling each about ¾ full.",
+      "Bake for 15 minutes, until a toothpick inserted in the center comes out clean.",
+      "Cool in the pan for 5 minutes before transferring. These taste even better the next day!"
+    ],
+    alt: null
+  },
+  {
+    id: 13,
+    name: "Sweet Potato Cheesecake",
+    korean: "고구마치즈케이크",
+    category: "baking",
+    desc: "A dreamy, autumn-inspired cheesecake swirled with roasted sweet potato.",
+    time: "50 min + 6hr chilling",
+    difficulty: "Medium",
+    tip: "Use roasted or baked sweet potato — not boiled — for the best flavor. Microwave a medium sweet potato for 6–8 minutes until completely soft, then scoop and mash.",
+    ingredients: [
+      { group: "Sweet Potato Layer", items: [
+        { name: "Roasted sweet potato, mashed", amount: "100g" },
+        { name: "Heavy cream, room temp", amount: "100g" },
+      ]},
+      { group: "Cheesecake Base", items: [
+        { name: "Cream cheese, room temp", amount: "150g" },
+        { name: "Sugar", amount: "40g" },
+        { name: "Eggs, room temp, beaten", amount: "90g (~2 medium)" },
+        { name: "Lemon juice", amount: "5g (1 tsp)" },
+      ]}
+    ],
+    steps: [
+      "Preheat oven to 410°F (210°C). Line a small baking pan with parchment paper.",
+      "Make the sweet potato layer: Blend or mash the roasted sweet potato with heavy cream until smooth. Set aside.",
+      "Make the cheesecake base: Beat cream cheese and sugar until smooth. Add eggs in two batches, mixing gently between each. Stir in lemon juice.",
+      "Combine both mixtures and stir gently until just combined.",
+      "Strain the batter through a fine mesh sieve — this removes lumps and makes it silky smooth.",
+      "Pour into the lined pan.",
+      "Bake at 410°F (210°C) for 25 minutes. The edges should be set, the center slightly jiggly.",
+      "Cool at room temperature, then refrigerate for at least 6 hours before slicing."
+    ],
+    alt: null
+  },
+  {
+    id: 14,
+    name: "Banana Pudding",
+    korean: "바나나푸딩",
+    category: "baking",
+    desc: "Layered American-style banana pudding with homemade custard, whipped cream, and cookies.",
+    time: "40 min + 1hr chilling",
+    difficulty: "Medium",
+    tip: "The custard thickens quickly once it heats — don't walk away from the stove. Keep stirring constantly or it'll scorch on the bottom.",
+    ingredients: [
+      { group: "Custard", items: [
+        { name: "Egg yolks", amount: "3 large" },
+        { name: "Sugar", amount: "60g" },
+        { name: "Cornstarch", amount: "15g" },
+        { name: "Whole milk", amount: "300g" },
+        { name: "Unsalted butter", amount: "10g" },
+        { name: "Vanilla extract", amount: "1 tsp" },
+      ]},
+      { group: "Whipped Cream", items: [
+        { name: "Heavy cream, cold", amount: "200g" },
+        { name: "Sugar", amount: "20g" },
+      ]},
+      { group: "Layers", items: [
+        { name: "Vanilla wafers or egg crackers (계란과자)", amount: "1 pack" },
+        { name: "Ripe bananas, sliced", amount: "2–3" },
+      ]}
+    ],
+    steps: [
+      "Make the custard: Whisk egg yolks, sugar, and cornstarch together in a medium saucepan until pale and smooth.",
+      "Pour in the milk while whisking. Place over medium-low heat. Stir constantly with a whisk or spatula.",
+      "Cook, stirring without stopping, until the mixture thickens noticeably — about 8–10 minutes. It should coat the back of a spoon.",
+      "Remove from heat. Stir in butter and vanilla extract. Press plastic wrap directly onto the surface (this prevents a skin). Refrigerate for 1 hour.",
+      "Make whipped cream: Beat cold heavy cream and sugar with a hand mixer until stiff peaks form — it holds its shape when you lift the beaters.",
+      "Loosen the chilled custard by stirring it gently. Fold in about ⅓ of the whipped cream to lighten it, then fold in the rest gently with a spatula.",
+      "Layer in a glass bowl or individual cups: custard → cookies → banana slices. Repeat until you reach the top. Finish with custard on top.",
+      "Crumble a few cookies on top for garnish. Refrigerate until ready to serve."
+    ],
+    alt: null
+  },
+  {
+    id: 15,
+    name: "Pistachio Raspberry Cheesecake",
+    korean: "피스타치오 라즈베리 케이크",
+    category: "baking",
+    desc: "An elegant no-bake-style cheesecake on a pistachio cookie crust, topped with raspberry cream.",
+    time: "1hr 30min + 6hr chilling",
+    difficulty: "Hard",
+    tip: "This is a showstopper cake — plan a day ahead. The cheesecake layer needs to chill before you add the raspberry cream, or they'll mix.",
+    ingredients: [
+      { group: "Crust", items: [
+        { name: "Whole wheat cookies (통밀쿠키)", amount: "90g" },
+        { name: "Roasted pistachios", amount: "20g" },
+        { name: "Melted unsalted butter", amount: "35g" },
+      ]},
+      { group: "Cheesecake Filling", items: [
+        { name: "Cream cheese, softened (microwave 30 sec)", amount: "340g" },
+        { name: "Sugar", amount: "80g" },
+        { name: "Eggs", amount: "2 large" },
+        { name: "Heavy cream", amount: "155g" },
+        { name: "Cornstarch", amount: "10g" },
+        { name: "Pistachio paste", amount: "65g" },
+      ]},
+      { group: "Raspberry Cream Topping", items: [
+        { name: "Raspberry jam", amount: "65g" },
+        { name: "Cream cheese", amount: "28g" },
+        { name: "Heavy cream, cold", amount: "160g" },
+      ]},
+      { group: "Garnish", items: [
+        { name: "Crushed egg crackers or cookies", amount: "a handful" },
+        { name: "Fresh raspberries or freeze-dried", amount: "optional" },
+      ]}
+    ],
+    steps: [
+      "Make the crust: Pulse cookies and pistachios in a food processor until fine crumbs. Add melted butter, pulse until it holds together like wet sand.",
+      "Press firmly into the base of a springform pan. Bake at 340°F (170°C) for 5 minutes. Let cool.",
+      "Make the filling: Microwave cream cheese for 30 seconds, then beat until smooth. Add sugar and mix well.",
+      "Add eggs one at a time, mixing gently after each. Stir in heavy cream and cornstarch.",
+      "Fold in pistachio paste until fully incorporated.",
+      "Pour over the cooled crust. Bake at 355°F (180°C) for 45 minutes. The edges should be set; the center will jiggle slightly.",
+      "Cool at room temperature for at least 30 minutes. Wrap tightly with plastic wrap and refrigerate for at least 6 hours.",
+      "Make the raspberry cream: Beat jam and cream cheese together until smooth. Add cold heavy cream in 3 additions, whipping until thick and spreadable.",
+      "Spread or pipe raspberry cream over the chilled cheesecake. Top with crumbled cookies for texture.",
+      "Slice with a warm knife (run under hot water, wipe dry) for clean cuts."
+    ],
+    alt: null
+  }
+];
+
+let activeFilter = 'all';
+let searchQuery = '';
+
+function filterRecipes(cat, btn) {
+  activeFilter = cat;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderGrid();
+}
+
+function searchRecipes(q) {
+  searchQuery = q.toLowerCase();
+  renderGrid();
+}
+
+function renderGrid() {
+  const grid = document.getElementById('grid');
+  const filtered = recipes.filter(r => {
+    const matchCat = activeFilter === 'all' || r.category === activeFilter;
+    const matchSearch = !searchQuery ||
+      r.name.toLowerCase().includes(searchQuery) ||
+      (r.korean && r.korean.includes(searchQuery)) ||
+      r.desc.toLowerCase().includes(searchQuery);
+    return matchCat && matchSearch;
+  });
+
+  if (!filtered.length) {
+    grid.innerHTML = '<div class="no-results"><span>🍽️</span>No recipes found. Try a different search!</div>';
+    return;
+  }
+
+  grid.innerHTML = filtered.map(r => {
+    const tagClass = `tag-${r.category}`;
+    const barClass = `bar-${r.category}`;
+    const tagLabel = r.category === 'korean' ? '🇰🇷 Korean' : r.category === 'western' ? '🥖 Western' : '🧁 Baking';
+    return `
+      <div class="card" onclick="openModal(${r.id})">
+        <div class="card-color ${barClass}"></div>
+        <div class="card-body">
+          <span class="card-tag ${tagClass}">${tagLabel}</span>
+          <h2>${r.name}</h2>
+          ${r.korean ? `<p style="font-size:0.8rem;color:rgba(61,43,31,0.4);margin-bottom:8px;font-style:italic;">${r.korean}</p>` : ''}
+          <p class="desc">${r.desc}</p>
+          <div class="card-meta">
+            <span>⏱ ${r.time}</span>
+            <span>📊 ${r.difficulty}</span>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function openModal(id) {
+  const r = recipes.find(x => x.id === id);
+  if (!r) return;
+
+  const tagClass = `tag-${r.category}`;
+  const tagLabel = r.category === 'korean' ? '🇰🇷 Korean' : r.category === 'western' ? '🥖 Western' : '🧁 Baking';
+
+  const ingredientsHTML = r.ingredients.map(group => `
+    <div class="ing-group">
+      ${group.group !== 'Ingredients' ? `<div class="ing-group-label">${group.group}</div>` : ''}
+      ${group.items.map(i => `
+        <div class="ing-row">
+          <span class="ing-name">${i.name}</span>
+          <span class="ing-amount">${i.amount}</span>
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+
+  const stepsHTML = r.steps.map((s, i) => {
+    const note = r.stepNote && r.stepNote[i] ? `<div class="step-note">💡 ${r.stepNote[i]}</div>` : '';
+    return `
+      <li class="step">
+        <div class="step-num">${i + 1}</div>
+        <div class="step-text">${s}${note}</div>
+      </li>
+    `;
+  }).join('');
+
+  document.getElementById('modal').innerHTML = `
+    <div class="modal-header">
+      <span class="card-tag tag ${tagClass}">${tagLabel}</span>
+      <h2>${r.name}</h2>
+      ${r.korean ? `<p class="korean-name">${r.korean}</p>` : ''}
+      <button class="close-btn" onclick="closeModalDirect()">✕</button>
+    </div>
+    <div class="modal-body">
+      ${r.tip ? `<div class="modal-tip"><strong>💡 Before you start:</strong> ${r.tip}</div>` : ''}
+      <div class="section-label">Ingredients</div>
+      <div class="ingredients">${ingredientsHTML}</div>
+      <div class="section-label">Steps</div>
+      <ol class="steps">${stepsHTML}</ol>
+      ${r.alt ? `<div class="alt-option"><strong>✨ Tip / Variation:</strong> ${r.alt}</div>` : ''}
+    </div>
+  `;
+
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModalDirect();
+}
+
+function closeModalDirect() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModalDirect();
+});
+
+renderGrid();
+</script>
+</body>
+</html>
